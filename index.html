@@ -74,13 +74,23 @@
         </section>
 
         <section>
-          <video width="700" controls>
-              <source src="assets/we_rock!.mov" type="video/mp4">
-          </video>
+          <header>React Components: lifecycle methods</header>
+            <ul>
+              <li>constructor()</li>
+              <li>componentWillMount()</li>
+              <li>componentDidMount()</li>
+              <li>componentWillReceiveProps()</li>
+              <li>shouldComponentUpdate()</li>
+              <li>componentWillUpdate()</li>
+              <li>componentDidUpdate()</li>
+              <li>componentWillUnmount()</li>
+              <li>componentDidCatch()</li>
+              <li>render()</li>
+            </ul>
         </section>
 
         <section>
-          <header>Introduction: state & props</header>
+          <header>React Components: state & props</header>
           <pre><code class="nohighlight" data-trim>
             class TopSong extends Component {
 
@@ -95,7 +105,19 @@
         </section>
 
         <section>
-          <header>Introduction: render()</header>
+          <header>React Compontns: prototype methods</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            class TopSong extends Component {
+
+            toggleDetails() {
+              const { detailsOpen } = this.state
+              this.setState({ detailsOpen: !detailsOpen })
+            }
+          </code></pre>
+        </section>
+
+        <section>
+          <header>React Compontns: render()</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             render() {
               const { id, song } = this.props
@@ -114,17 +136,9 @@
         </section>
 
         <section>
-          <header>Introduction: more lifecycle methods</header>
-            <ul>
-              <li>componentWillMount()</li>
-              <li>componentDidMount()</li>
-              <li>componentWillReceiveProps()</li>
-              <li>shouldComponentUpdate()</li>
-              <li>componentWillUpdate()</li>
-              <li>componentDidUpdate()</li>
-              <li>componentWillUnmount()</li>
-              <li>componentDidCatch()</li>
-            </ul>
+          <video width="700" controls>
+              <source src="assets/we_rock!.mov" type="video/mp4">
+          </video>
         </section>
 
         <section>
@@ -146,7 +160,13 @@
 
         <section>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            snapshot
+            &lt;section&gt;
+              &lt;header /&gt;
+              &lt;ToggleButton
+                detailsOpen={false}
+                handleClick={[Function]}
+              /&gt;
+            &lt;/section&gt;
           </code></pre>
         </section>
 
@@ -161,7 +181,25 @@
 
         <section>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            snapshot
+            &lt;TopSong
+              fetchSong={[Function]}
+              id="1"
+              song={Object {}}
+            &gt;
+              &lt;section&gt;
+                &lt;header /&gt;
+                &lt;ToggleButton
+                  detailsOpen={false}
+                  handleClick={[Function]}
+                &gt;
+                  &lt;button
+                    onClick={[Function]}
+                  &gt;
+                    Show details
+                  &lt;/button&gt;
+                &lt;/ToggleButton&gt;
+              &lt;/section&gt;
+            &lt;/TopSong&gt;
           </code></pre>
         </section>
 
@@ -373,30 +411,50 @@
 
         <section>
           <header>...click</header>
-        </section>
-
-        <section>
-          <header>...click2</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            it('passes correct props to nested components', () => {
+            it('toggles details on ToggleButton click', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
-              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
-              wrapper.setState({ detailsOpen: true })
-              expect(wrapper.find(Details).props())
-                .toEqual({ id: '1', song: { title: 'We rock!' } })
+              const wrapper = mount(&lt;TopSong {...props}/&gt;)
+              wrapper.instance().toggleDetails = jest.fn()
+              wrapper.find(ToggleButton).simulate('click')
+              expect(wrapper.instance().toggleDetails.mock.calls.length).toBe(1)
             })
           </code></pre>
         </section>
 
         <section>
-          <header>...change</header>
+          <header>...click with event passed</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            it('passes correct props to nested components', () => {
+            it('toggles details on ToggleButton click', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
-              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
-              wrapper.setState({ detailsOpen: true })
-              expect(wrapper.find(Details).props())
-                .toEqual({ id: '1', song: { title: 'We rock!' } })
+              const wrapper = mount(&lt;TopSong {...props}/&gt;)
+              wrapper.instance().toggleDetails = jest.fn()
+              wrapper.find(ToggleButton)
+                .simulate('click', { preventDefault: () => ({})})
+              expect(wrapper.instance().toggleDetails.mock.calls.length).toBe(1)
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...other simulations</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            input.simulate('change', { target: { value: 123 } })
+            input.simulate('change', { target: { checked: true } })
+            select.simulate('change', { target: { value: 'option 1'} })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...spying</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('calls toggle details on ToggleButton click & updates state', () => {
+              const props = { id: '1', song: { title: 'We rock!' } }
+              const wrapper = mount(&lt;TopSong {...props}/&gt;)
+              const spy = jest.spyOn(wrapper.instance(), 'toggleDetails')
+              wrapper.find(ToggleButton).simulate('click')
+              expect(spy).toHaveBeenCalled()
+              expect(wrapper.state().detailsOpen).toBe(true)
             })
           </code></pre>
         </section>
@@ -408,12 +466,11 @@
         <section>
           <header>...click</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            it('passes correct props to nested components', () => {
+            it('should toggle details on button click', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
-              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
-              wrapper.setState({ detailsOpen: true })
-              expect(wrapper.find(Details).props())
-                .toEqual({ id: '1', song: { title: 'We rock!' } })
+              const wrapper = mount(&lt;TopSong {...props}/&gt;)
+              wrapper.find(ToggleButton).simulate('click')
+              expect(wrapper.find(Details).length).toBe(1)
             })
           </code></pre>
         </section>
