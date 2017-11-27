@@ -7,10 +7,12 @@
 		<title>reveal.js</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/white.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="assets/mycss.css">
+    <script src="plugin/highlight/highlight.js"></script>
 
 		<!-- Printing and PDF exports -->
 		<script>
@@ -24,8 +26,431 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+
+        <section>
+          <h2>Testing React Components</h2>
+          Monika Glier
+        </section>
+
+        <section class='libs'>
+          <div id='jest'><img src='assets/jest.png' alt='jest'></div>
+          <div id='enzyme'><img src='assets/airbnb.png' alt='airbnb'><div>enzyme</div></div>
+        </section>
+
+        <section>
+          <ul>
+            <li>assertions</li>
+            <ul>
+              <li>toBe ('==='; strings, booleans, numbers, etc.)</li>
+              <li>toEqual (deep value comparison; objects)</li>
+              <li>toThrow (functions)</li>
+              <li>toMatchSnapshot</li>
+            </ul>
+            <li>mocks</li>
+            <ul>
+              <li>jest.fn()</li>
+              <li>mockReturnValueOnce</li>
+              <li>mockReturnValue</li>
+              <li>mock.calls</li>
+            </ul>
+            <li>
+              spies
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <ul>
+            <li>shallow</li>
+            <li>mount</li>
+            <li>render</li>
+
+            <li>simulate</li>
+            <ul>
+              <li>click</li>
+              <li>change</li>
+            </ul>
+          </ul>
+        </section>
+
+        <section>
+          <header>Introduction: state & props</header>
+          <pre><code class="nohighlight" data-trim>
+            class TopSong extends Component {
+
+            constructor(props) {
+              super(props)
+              this.state = {
+                color: titleToRGB(props.song.title),
+                detailsOpen: false,
+              }
+            }
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Introduction: render()</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            render() {
+              const { id, song } = this.props
+              return (
+                &lt;section&gt;
+                  &lt;header&gt;{song.title}&lt;/header&gt;
+                  &lt;ToggleButton
+                    detailsOpen={this.state.detailsOpen}
+                    handleClick={() =&gt; this.toggleDetails()}
+                  /&gt;
+                  {this.state.detailsOpen && &lt;Details id={id} song={song} /&gt;}
+                &lt;/section&gt;
+              )
+            }
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Introduction: more lifecycle methods</header>
+            <ul>
+              <li>componentWillMount()</li>
+              <li>componentDidMount()</li>
+              <li>componentWillReceiveProps()</li>
+              <li>shouldComponentUpdate()</li>
+              <li>componentWillUpdate()</li>
+              <li>componentDidUpdate()</li>
+              <li>componentWillUnmount()</li>
+              <li>componentDidCatch()</li>
+            </ul>
+        </section>
+
+        <section>
+          <header>What tests do you need?</header>
+        </section>
+
+        <section>
+          <header>Snapshot tests</header>
+        </section>
+
+        <section>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('matches snapshot (shallow)', () => {
+              const wrapper = shallow(&lt;TopSong/>&gt;
+              expect(toJson(wrapper)).toMatchSnapshot()
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            snapshot
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('matches snapshot (mount)', () => {
+              const wrapper = mount(&lt;TopSong/>&gt;
+              expect(toJson(wrapper)).toMatchSnapshot()
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            snapshot
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Render tests</header>
+        </section>
+
+        <section>
+          <header>...renders without crashing</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            describe(App, () => {
+              it('renders without crashing', () => {
+                const div = document.createElement('div')
+                ReactDOM.render(&lt;App /&gt;, div)
+              })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...is a tag</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('should wrap content in a section tag', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              expect(wrapper.is('section')).toBe(true)
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...is null</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            describe('Popup', () => {
+              it('is null if props.open not set', () => {
+                const wrapper = shallow(&lt;Popup /&gt;)
+                expect(wrapper.getElement()).toBe(null)
+              })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...has expected state</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+             it('should set initial state correctly', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              expect(wrapper.state().detailsOpen).toBe(false)
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...has expected content</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('should contain ToggleButton, no Details by default', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              expect(wrapper.find(ToggleButton).length).toBe(1)
+              expect(wrapper.find(Details).length).toBe(0)
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...has expected content on updated state</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('should contain Details for detailsOpen', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              wrapper.setState({ detailsOpen: true })
+              wrapper.update()
+              expect(wrapper.find(Details).length).toBe(1)
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...passes correct props to nested components</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('passes correct props to nested components', () => {
+              const props = { id: '1', song: { title: 'We rock!' } }
+              const wrapper = shallow(&lt;TopSong {...props}/>)
+              wrapper.setState({ detailsOpen: true })
+              expect(wrapper.find(Details).props())
+                .toEqual({ id: '1', song: { title: 'We rock!' } })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Behaviour tests</header>
+        </section>
+
+        <section>
+          <ul>
+            <li>lifecycle methods</li>
+            <li>user interactions</li>
+          </ul>
+        </section>
+
+        <section>
+          <header>Mocking</header>
+        </section>
+
+        <section>
+          <header>...mocking props functions</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            const props = {
+              fetchUserDetails: jest.fn(),
+              userId: '5'
+            }
+          </code></pre>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            const props = {
+              fetchUserDetails: jest.fn(),
+              userId: '5'
+            }
+          </code></pre>
+          ...
+        </section>
+
+        <section>
+          <header>...mocking prototype functions</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            const props = {
+              fetchUserDetails: jest.fn(),
+              userId: '5'
+            }
+          </code></pre>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            const props = {
+              fetchUserDetails: jest.fn(),
+              userId: '5'
+            }
+          </code></pre>
+          ...
+        </section>
+
+        <section>
+          <header>...componentDidMount()</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('fetches song on mount', () => {
+              const props = { fetchSong: jest.fn(), id: '1' }
+              const wrapper = shallow(&lt;TopSong {&gt;..props} />)
+              expect(props.fetchSong.mock.calls.length).toBe(1)
+              expect(props.fetchSong.mock.calls[0])
+                .toEqual(['1'])
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...componentWillReceiveProps()</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('downloads song on new export data', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              wrapper.instance().downloadSong = jest.fn()
+              wrapper.setProps({ exportData: 'some export data' })
+              const calls = wrapper.instance().downloadSong.mock.calls
+              expect(calls.length).toBe(1)
+              expect(calls[0]).toEqual(['some export data'])
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...componentWillReceiveProps() - called directly</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('downloads song on new export data', () => {
+              const wrapper = shallow(&lt;TopSong /&gt;)
+              wrapper.instance().downloadSong = jest.fn()
+              wrapper.instance().componentWillReceiveProps({ exportData: 'some export data' })
+              const calls = wrapper.instance().downloadSong.mock.calls
+              expect(calls.length).toBe(1)
+              expect(calls[0]).toEqual(['some export data'])
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...shouldComponentpdate() - called directly</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            describe('Details', () => {
+              it('should update on new song id', () => {
+                const wrapper = shallow(&lt;Details id='1' song={{}} /&gt;)
+                expect(wrapper.instance().shouldComponentUpdate({ id: '1' }))
+                  .toBe(false)
+                expect(wrapper.instance().shouldComponentUpdate({ id: '2' }))
+                  .toBe(true)
+              })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...componentDidCatch()</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            describe('ErrorWrapper', () => {
+              it('throws an error', () => {
+                expect(() => shallow(
+                  <ErrorWrapper><div>{unknown.title}</div></ErrorWrapper>)
+                ).toThrow()
+              })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...user interactions</header>
+        </section>
+
+        <section>
+          <header>...click</header>
+        </section>
+
+        <section>
+          <header>...click2</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('passes correct props to nested components', () => {
+              const props = { id: '1', song: { title: 'We rock!' } }
+              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
+              wrapper.setState({ detailsOpen: true })
+              expect(wrapper.find(Details).props())
+                .toEqual({ id: '1', song: { title: 'We rock!' } })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>...change</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('passes correct props to nested components', () => {
+              const props = { id: '1', song: { title: 'We rock!' } }
+              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
+              wrapper.setState({ detailsOpen: true })
+              expect(wrapper.find(Details).props())
+                .toEqual({ id: '1', song: { title: 'We rock!' } })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Integration tests</header>
+        </section>
+
+        <section>
+          <header>...click</header>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            it('passes correct props to nested components', () => {
+              const props = { id: '1', song: { title: 'We rock!' } }
+              const wrapper = shallow(&lt;TopSong {...props}/&gt;)
+              wrapper.setState({ detailsOpen: true })
+              expect(wrapper.find(Details).props())
+                .toEqual({ id: '1', song: { title: 'We rock!' } })
+            })
+          </code></pre>
+        </section>
+
+        <section>
+          <header>Document errors</header>
+          <ul>
+            <li>window is not defined</li>
+            <li>document is not defined </li>
+            <li>body is not defined</li>
+          </ul>
+          <pre><code class="nohighlight" data-trim data-no-escape>
+            JSDOM
+            const { JSDOM } = jsdom
+            const { window } = new JSDOM(
+              '&lt;!doctype html&gt;&lt;html&gt;&lt;body&gt;&lt;/body&gt;&lt;/html&gt;'
+            )
+          </code></pre>
+        </section>
+
+        <section>
+          <ul>
+            <li>connected components - name export</li>
+            <pre><code class="nohighlight" data-trim data-no-escape>
+              export class TopSong extends Component {
+            </code></pre>
+          </ul>
+        </section>
+
+        <section>
+          <header>Resources</header>
+          <ul>
+            <li>https://facebook.github.io/jest/docs/en/api.html</li>
+            <li>http://airbnb.io/enzyme/docs/api/</li>
+            <li>http://sinonjs.org/releases/v4.1.2/</li>
+            <li>https://nerdblog.pl/post/166842840969/testing-react-components</li>
+            <li>https://medium.freecodecamp.org/the-right-way-to-test-react-components-548a4736ab22</li>
+          </ul>
+        </section>
+
+        <section>
+          Thank you
+        </section>
 			</div>
 		</div>
 
@@ -37,6 +462,7 @@
 			// - https://github.com/hakimel/reveal.js#configuration
 			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
+        history: true,
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
 					{ src: 'plugin/markdown/markdown.js' },
