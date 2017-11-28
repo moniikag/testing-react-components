@@ -1,0 +1,35 @@
+body {
+  max-height: 1000px;
+}
+
+.libs {
+  height: 1000px;
+  position: relative;
+}
+
+#jest {
+  height: 30%;
+  float: left;
+}
+
+#jest img, #enzyme img {
+  border: none;
+  box-shadow: none;
+}
+
+#enzyme {
+  display: block;
+  position: relative;
+  height: 30%;
+  float: right;
+  border: none;
+}
+
+#enzyme div {
+  position: absolute;
+  left: 32px;
+  bottom: -30px;
+  color: #fc5555;
+  font-weight: bold;
+  font-size: 65px;
+}
