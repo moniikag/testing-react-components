@@ -44,7 +44,7 @@
               <li>toBe ('==='; strings, booleans, numbers, etc.)</li>
               <li>toEqual (deep value comparison; objects)</li>
               <li>toThrow (functions)</li>
-              <li>toMatchSnapshot</li>
+              <li>toMatchSnapshot()</li>
             </ul>
             <li>mocks</li>
             <ul>
@@ -100,7 +100,6 @@
                 color: titleToRGB(props.song.title),
                 detailsOpen: false,
               }
-              this.toggleDetails = this.toggleDetails.bind(this)
             }
 
             toggleDetails() {
@@ -120,7 +119,7 @@
                   &lt;header&gt;{song.title}&lt;/header&gt;
                   &lt;ToggleButton
                     detailsOpen={this.state.detailsOpen}
-                    handleClick={this.toggleDetails}
+                    handleClick={() => this.toggleDetails()}
                   /&gt;
                   {this.state.detailsOpen
                    && &lt;Details id={id} song={song} /&gt;}
@@ -176,7 +175,7 @@
           <header>Snapshot tests 2</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             it('matches snapshot (mount)', () => {
-              const wrapper = mount(&lt;TopSong/>&gt;
+              const wrapper = mount(&lt;TopSong/&gt;)
               expect(toJson(wrapper)).toMatchSnapshot()
             })
           </code></pre>
@@ -259,7 +258,10 @@
           <header>...has expected content</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             it('should contain ToggleButton, no Details by default', () => {
-              const wrapper = shallow(&lt;TopSong /&gt;)
+              const props = { song: { title: 'We rock!' } }
+              const wrapper = shallow(&lt;TopSong {...props} /&gt;)
+              expect(wrapper.find('header').length).toBe(1)
+              expect(wrapper.find('header').text()).toBe('We rock!')
               expect(wrapper.find(ToggleButton).length).toBe(1)
               expect(wrapper.find(Details).length).toBe(0)
             })
@@ -272,7 +274,6 @@
             it('should contain Details for detailsOpen', () => {
               const wrapper = shallow(&lt;TopSong /&gt;)
               wrapper.setState({ detailsOpen: true })
-              wrapper.update()
               expect(wrapper.find(Details).length).toBe(1)
             })
           </code></pre>
@@ -383,20 +384,20 @@
         </section>
 
         <section>
-          <header>...shouldComponentpdate() - called directly</header>
+          <header>...shouldComponentUpdate() - called directly</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             describe('Details', () => {
               it('should update on new song id', () => {
                 const wrapper = shallow(&lt;Details id='1' song={{}} /&gt;)
-                expect(wrapper.instance().shouldComponentUpdate({ id: '1' }))
-                  .toBe(false)
-                expect(wrapper.instance().shouldComponentUpdate({ id: '2' }))
-                  .toBe(true)
+                expect(wrapper.instance()
+                  .shouldComponentUpdate({ id: '1' })).toBe(false)
+                expect(wrapper.instance()
+                  .shouldComponentUpdate({ id: '2' })).toBe(true)
               })
             })
           </code></pre>
         </section>
-
+<!--
         <section>
           <header>...componentDidCatch()</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
@@ -408,7 +409,7 @@
               })
             })
           </code></pre>
-        </section>
+        </section> -->
 
         <section>
           <header>...user interactions</header>
