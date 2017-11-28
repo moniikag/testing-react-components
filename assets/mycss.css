@@ -7,28 +7,32 @@ body {
   position: relative;
 }
 
-#jest {
-  height: 30%;
-  float: left;
-}
-
 #jest img, #enzyme img {
   border: none;
   box-shadow: none;
 }
 
+#jest {
+  width: 30%;
+  float: left;
+  margin-left: 18%;
+  margin-top: 10%;
+}
+
 #enzyme {
   display: block;
   position: relative;
-  height: 30%;
+  width: 30%;
   float: right;
   border: none;
+  margin-right: 18%;
+  margin-top: 10%;
 }
 
 #enzyme div {
   position: absolute;
   left: 32px;
-  bottom: -30px;
+  bottom: -20px;
   color: #fc5555;
   font-weight: bold;
   font-size: 65px;
@@ -36,4 +40,26 @@ body {
 
 .reveal pre code {
   max-height: 600px;
+}
+
+header {
+  font-size: 70px;
+}
+
+#user, #snapshot, #question {
+  border: none;
+  width: 55%;
+  box-shadow: none;
+}
+
+#alpaca {
+  border: none;
+  width: 75%;
+  box-shadow: none;
+}
+
+#render {
+  border: none;
+  width: 100%;
+  box-shadow: none;
 }
