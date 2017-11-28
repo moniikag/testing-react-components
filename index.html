@@ -100,14 +100,8 @@
                 color: titleToRGB(props.song.title),
                 detailsOpen: false,
               }
+              this.toggleDetails = this.toggleDetails.bind(this)
             }
-          </code></pre>
-        </section>
-
-        <section>
-          <header>React Compontns: prototype methods</header>
-          <pre><code class="nohighlight" data-trim data-no-escape>
-            class TopSong extends Component {
 
             toggleDetails() {
               const { detailsOpen } = this.state
@@ -117,7 +111,7 @@
         </section>
 
         <section>
-          <header>React Compontns: render()</header>
+          <header>React Components: render()</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             render() {
               const { id, song } = this.props
@@ -126,9 +120,10 @@
                   &lt;header&gt;{song.title}&lt;/header&gt;
                   &lt;ToggleButton
                     detailsOpen={this.state.detailsOpen}
-                    handleClick={() =&gt; this.toggleDetails()}
+                    handleClick={this.toggleDetails}
                   /&gt;
-                  {this.state.detailsOpen && &lt;Details id={id} song={song} /&gt;}
+                  {this.state.detailsOpen
+                   && &lt;Details id={id} song={song} /&gt;}
                 &lt;/section&gt;
               )
             }
@@ -150,7 +145,13 @@
         </section>
 
         <section>
+          <header>Snapshot tests 1</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
+            import { shallow } from 'enzyme'
+            import toJson from 'enzyme-to-json'
+
+                            ...
+
             it('matches snapshot (shallow)', () => {
               const wrapper = shallow(&lt;TopSong/>&gt;
               expect(toJson(wrapper)).toMatchSnapshot()
@@ -159,6 +160,7 @@
         </section>
 
         <section>
+          <header>...result</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             &lt;section&gt;
               &lt;header /&gt;
@@ -171,6 +173,7 @@
         </section>
 
         <section>
+          <header>Snapshot tests 2</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             it('matches snapshot (mount)', () => {
               const wrapper = mount(&lt;TopSong/>&gt;
@@ -180,6 +183,7 @@
         </section>
 
         <section>
+          <header>...result</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             &lt;TopSong
               fetchSong={[Function]}
@@ -263,7 +267,7 @@
         </section>
 
         <section>
-          <header>...has expected content on updated state</header>
+          <header>...updates content</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             it('should contain Details for detailsOpen', () => {
               const wrapper = shallow(&lt;TopSong /&gt;)
@@ -275,7 +279,7 @@
         </section>
 
         <section>
-          <header>...passes correct props to nested components</header>
+          <header>...passes props</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
             it('passes correct props to nested components', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
@@ -369,7 +373,8 @@
             it('downloads song on new export data', () => {
               const wrapper = shallow(&lt;TopSong /&gt;)
               wrapper.instance().downloadSong = jest.fn()
-              wrapper.instance().componentWillReceiveProps({ exportData: 'some export data' })
+              const props = { exportData: 'some export data' }
+              wrapper.instance().componentWillReceiveProps(props)
               const calls = wrapper.instance().downloadSong.mock.calls
               expect(calls.length).toBe(1)
               expect(calls[0]).toEqual(['some export data'])
@@ -417,7 +422,8 @@
               const wrapper = mount(&lt;TopSong {...props}/&gt;)
               wrapper.instance().toggleDetails = jest.fn()
               wrapper.find(ToggleButton).simulate('click')
-              expect(wrapper.instance().toggleDetails.mock.calls.length).toBe(1)
+              expect(wrapper.instance().toggleDetails.mock.calls.length)
+                .toBe(1)
             })
           </code></pre>
         </section>
@@ -431,7 +437,8 @@
               wrapper.instance().toggleDetails = jest.fn()
               wrapper.find(ToggleButton)
                 .simulate('click', { preventDefault: () => ({})})
-              expect(wrapper.instance().toggleDetails.mock.calls.length).toBe(1)
+              expect(wrapper.instance().toggleDetails.mock.calls.length)
+                .toBe(1)
             })
           </code></pre>
         </section>
@@ -448,7 +455,7 @@
         <section>
           <header>...spying</header>
           <pre><code class="nohighlight" data-trim data-no-escape>
-            it('calls toggle details on ToggleButton click & updates state', () => {
+            it('calls toggle details & updates state', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
               const wrapper = mount(&lt;TopSong {...props}/&gt;)
               const spy = jest.spyOn(wrapper.instance(), 'toggleDetails')
