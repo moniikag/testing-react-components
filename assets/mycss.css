@@ -46,7 +46,7 @@ header {
   font-size: 70px;
 }
 
-#user, #snapshot, #question {
+#user, #snapshot, #question, #integration {
   border: none;
   width: 55%;
   box-shadow: none;
