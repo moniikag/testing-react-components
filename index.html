@@ -476,7 +476,7 @@
             it('calls toggle details & updates state', () => {
               const props = { id: '1', song: { title: 'We rock!' } }
               const spy = <b>jest.spyOn(TopSong.prototype, 'toggleDetails')</b>
-              const wrapper = mount(<TopSong {...props}/>)
+              const wrapper = mount(&lt;TopSong {...props}/&gt;)
               wrapper.find(ToggleButton).simulate('click')
               <b>expect(spy).toHaveBeenCalled()</b>
               expect(wrapper.state().detailsOpen).toBe(true)
